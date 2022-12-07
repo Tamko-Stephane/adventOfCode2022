@@ -15,103 +15,90 @@ namespace TextBoxAnd10Lines
         private void InsertNewText()
         {
             InsertBtn.Enabled = false;
-            Output10LinesLimitedTbx.AppendLine(GetTheMaximumScoreRockPaperScissorsWithGuidePrt2(InsertionTbx.Text).ToString());
+            Output10LinesLimitedTbx.AppendLine(GetSumOfPrioritiesOfItemsGroup(InsertionTbx.Text).ToString());
             InsertionTbx.ResetText();
             InsertionTbx.Focus();
         }
 
 
-        private static long GetTheMaximumScoreRockPaperScissorsWithGuidePrt2(string Text)
+        private static long GetSumOfPrioritiesOfItemsGroup(string Text)
         {
             if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text))
             {
                 throw new ArgumentNullException($"{nameof(Text)} can not be empty");
             }
 
-            var roundsPredictions = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            var rucksacks = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-            if (roundsPredictions.Length == 0) return 0;
+            if (rucksacks.Length == 0) return 0;
 
-            var winningGuide = new Dictionary<string, string>() { { "C", "X" }, {"B", "Z" }, { "A", "Y" } };
-            var losingGuide = new Dictionary<string, string>() { { "C", "Y" }, {"B", "X" }, { "A", "Z" } };
-            var drawGuide = new Dictionary<string, string>() { { "A", "X"}, {"B", "Y" }, { "C", "Z" } };
-            var valuesShapeSelected = new Dictionary<string, int>() { {"X", 1}, {"Y", 2}, { "Z", 3 }};
-            long finalScore = 0;
-            foreach (var round in roundsPredictions)
+            var lowerCasePriorities = new Dictionary<char, int>() { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
+                { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 }, { 'm', 13 }, { 'n', 14 }, { 'o', 15 }, { 'p', 16 },
+            { 'q', 17 }, { 'r', 18 }, { 's', 19 }, { 't', 20 }, { 'u', 21 }, { 'v', 22 }, { 'w', 23 }, { 'x', 24 }, { 'y', 25 }, { 'z', 26 }};
+            
+            var upperCasePriorities = new Dictionary<char, int>() { { 'A', 27 }, { 'B', 28 }, { 'C', 29 }, { 'D', 30 }, { 'E', 31 }, { 'F', 32 },
+                { 'G', 33 }, { 'H', 34 }, { 'I', 35 }, { 'J', 36 }, { 'K', 37 }, { 'L', 38 }, { 'M', 39 }, { 'N', 40 }, { 'O', 41 }, { 'P', 42 },
+            { 'Q', 43 }, { 'R', 44 }, { 'S', 45 }, { 'T', 46 }, { 'U', 47 }, { 'V', 48 }, { 'W', 49 }, { 'X', 50 }, { 'Y', 51 }, { 'Z', 52 }};
+
+            int sumOfPriority = 0;
+            int NumberOfRuckSacksPerGroup = 3;
+            int numberOfGroups = rucksacks.Length / NumberOfRuckSacksPerGroup;
+            for (int i = 0; i < numberOfGroups; i++)
             {
-                var leftRightRoundPlay = round.Split(" ");
-                if(leftRightRoundPlay.Length >= 2)
-                {
-                    var key = leftRightRoundPlay[1].ToUpper();
-                    var opponentHand = leftRightRoundPlay[0].ToUpper();
+                int key = i * NumberOfRuckSacksPerGroup;
+                var gpRucksack1 = rucksacks[key];
+                var gpRucksack2 = rucksacks[key+1];
+                var gpRucksack3 = rucksacks[key+2];
+                var gpBadgeItem = gpRucksack1.FirstOrDefault(c=>gpRucksack2.Contains(c) && gpRucksack3.Contains(c));
+                sumOfPriority += GetCharacterPriority(gpBadgeItem, lowerCasePriorities, upperCasePriorities);
+            }                                                                                     
 
-                    //shape selected
-                    //finalScore += valuesShapeSelected[key];
-
-                    switch (key)
-                    {
-                        //win
-                        case "Z":
-                            finalScore+=6;
-                            finalScore += valuesShapeSelected[winningGuide[opponentHand]];
-                            break;
-                        //draw
-                        case "Y":
-                            finalScore+=3;
-                            finalScore += valuesShapeSelected[drawGuide[opponentHand]];
-                            break;
-                        case "X":                            
-                            finalScore += valuesShapeSelected[losingGuide[opponentHand]];
-                            break;
-                    }          
-                }
-            }                                                                           
-
-            return finalScore;
+            return sumOfPriority;
         }
-        private static long GetTheMaximumScoreRockPaperScissorsWithGuide(string Text)
+
+        private static long GetSumOfPrioritiesOfItems(string Text)
         {
             if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text))
             {
                 throw new ArgumentNullException($"{nameof(Text)} can not be empty");
             }
 
-            var roundsPredictions = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            var rucksacks = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-            if (roundsPredictions.Length == 0) return 0;
+            if (rucksacks.Length == 0) return 0;
 
-            var winningGuide = new Dictionary<string, string>() { {"X", "C"}, {"Z", "B"}, { "Y", "A" }};
-            var drawGuide = new Dictionary<string, string>() { {"X", "A"}, {"Y", "B"}, { "Z", "C" }};
-            var valuesShapeSelected = new Dictionary<string, int>() { {"X", 1}, {"Y", 2}, { "Z", 3 }};
-            long finalScore = 0;
-            foreach (var round in roundsPredictions)
+            var lowerCasePriorities = new Dictionary<char, int>() { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
+                { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 }, { 'm', 13 }, { 'n', 14 }, { 'o', 15 }, { 'p', 16 },
+            { 'q', 17 }, { 'r', 18 }, { 's', 19 }, { 't', 20 }, { 'u', 21 }, { 'v', 22 }, { 'w', 23 }, { 'x', 24 }, { 'y', 25 }, { 'z', 26 }};
+
+            var upperCasePriorities = new Dictionary<char, int>() { { 'A', 27 }, { 'B', 28 }, { 'C', 29 }, { 'D', 30 }, { 'E', 31 }, { 'F', 32 },
+                { 'G', 33 }, { 'H', 34 }, { 'I', 35 }, { 'J', 36 }, { 'K', 37 }, { 'L', 38 }, { 'M', 39 }, { 'N', 40 }, { 'O', 41 }, { 'P', 42 },
+            { 'Q', 43 }, { 'R', 44 }, { 'S', 45 }, { 'T', 46 }, { 'U', 47 }, { 'V', 48 }, { 'W', 49 }, { 'X', 50 }, { 'Y', 51 }, { 'Z', 52 }};
+
+            int sumOfPriority = 0;
+            foreach (var rucksack in rucksacks)
             {
-                var leftRightRoundPlay = round.Split(" ");
-                if(leftRightRoundPlay.Length >= 2)
-                {
-                    var key = leftRightRoundPlay[1].ToUpper();
-                    var opponentHand = leftRightRoundPlay[0].ToUpper();
+                if (string.IsNullOrEmpty(rucksack) || string.IsNullOrWhiteSpace(rucksack)) continue;
 
-                    //shape selected
-                    finalScore += valuesShapeSelected[key];
-                    //win
-                    if (winningGuide.Keys.Contains(key) && winningGuide[key] == opponentHand)
-                    {
-                        finalScore+=6;
-                    }
-                    //draw
-                    if (drawGuide.Keys.Contains(key) && drawGuide[key] == opponentHand)
-                    {
-                        finalScore += 3;
-                    }
-                    //lose, 0 added, no operation
+                int numberOfItems = rucksack.Length;
+                var leftCompartment = rucksack[..(numberOfItems / 2)];
+                var rightCompartment = rucksack[(numberOfItems / 2)..];
+                var itemInBoth = leftCompartment.FirstOrDefault(c => rightCompartment.Contains(c));
+                sumOfPriority += GetCharacterPriority(itemInBoth, lowerCasePriorities, upperCasePriorities);
+                            
+            }
 
-                }
-            }                                                                           
-
-            return finalScore;
+            return sumOfPriority;
         }
-                
+
+        private static int GetCharacterPriority(char character, Dictionary<char, int> lowerCasePriorities, Dictionary<char, int> upperCasePriorities)
+        {            
+            if(lowerCasePriorities.ContainsKey(character))
+                return lowerCasePriorities[character];
+            if(upperCasePriorities.ContainsKey(character))
+                return upperCasePriorities[character];
+         return 0;
+        }                        
 
         private void ChangeInsertBtnState(object sender, EventArgs e)
         {
