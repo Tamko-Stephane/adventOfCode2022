@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace TextBoxAnd10Lines
 {
     public partial class Form1 : Form
@@ -15,91 +17,81 @@ namespace TextBoxAnd10Lines
         private void InsertNewText()
         {
             InsertBtn.Enabled = false;
-            Output10LinesLimitedTbx.AppendLine(GetSumOfPrioritiesOfItemsGroup(InsertionTbx.Text).ToString());
+            Output10LinesLimitedTbx.AppendLine(GetNumberOfAssignementsFullyContainedInAnother(InsertionTbx.Text).ToString());
             InsertionTbx.ResetText();
             InsertionTbx.Focus();
         }
 
 
-        private static long GetSumOfPrioritiesOfItemsGroup(string Text)
+        private static long GetNumberOfAssignementsFullyContainedInAnother(string Text)
         {
             if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text))
             {
                 throw new ArgumentNullException($"{nameof(Text)} can not be empty");
             }
 
-            var rucksacks = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            var pairsOfAssignments = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-            if (rucksacks.Length == 0) return 0;
+            if (pairsOfAssignments.Length == 0) return 0;
 
-            var lowerCasePriorities = new Dictionary<char, int>() { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
-                { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 }, { 'm', 13 }, { 'n', 14 }, { 'o', 15 }, { 'p', 16 },
-            { 'q', 17 }, { 'r', 18 }, { 's', 19 }, { 't', 20 }, { 'u', 21 }, { 'v', 22 }, { 'w', 23 }, { 'x', 24 }, { 'y', 25 }, { 'z', 26 }};
-            
-            var upperCasePriorities = new Dictionary<char, int>() { { 'A', 27 }, { 'B', 28 }, { 'C', 29 }, { 'D', 30 }, { 'E', 31 }, { 'F', 32 },
-                { 'G', 33 }, { 'H', 34 }, { 'I', 35 }, { 'J', 36 }, { 'K', 37 }, { 'L', 38 }, { 'M', 39 }, { 'N', 40 }, { 'O', 41 }, { 'P', 42 },
-            { 'Q', 43 }, { 'R', 44 }, { 'S', 45 }, { 'T', 46 }, { 'U', 47 }, { 'V', 48 }, { 'W', 49 }, { 'X', 50 }, { 'Y', 51 }, { 'Z', 52 }};
+            int countFullyContained = 0;
 
-            int sumOfPriority = 0;
-            int NumberOfRuckSacksPerGroup = 3;
-            int numberOfGroups = rucksacks.Length / NumberOfRuckSacksPerGroup;
-            for (int i = 0; i < numberOfGroups; i++)
+            foreach (var pairOfAssignment in pairsOfAssignments)
             {
-                int key = i * NumberOfRuckSacksPerGroup;
-                var gpRucksack1 = rucksacks[key];
-                var gpRucksack2 = rucksacks[key+1];
-                var gpRucksack3 = rucksacks[key+2];
-                var gpBadgeItem = gpRucksack1.FirstOrDefault(c=>gpRucksack2.Contains(c) && gpRucksack3.Contains(c));
-                sumOfPriority += GetCharacterPriority(gpBadgeItem, lowerCasePriorities, upperCasePriorities);
+                var assignments = pairOfAssignment.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                var assignmentsElf1 = assignments[0];              
+                var assignmentsElf2 = assignments[1];
+                if (IsAssignmentsFullyContained(assignmentsElf1, assignmentsElf2))
+                    countFullyContained++;
             }                                                                                     
 
-            return sumOfPriority;
+            return countFullyContained;
         }
 
-        private static long GetSumOfPrioritiesOfItems(string Text)
+        private static bool IsAssignmentsFullyContained(string assignmentsElf1, string assignmentsElf2)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text))
-            {
-                throw new ArgumentNullException($"{nameof(Text)} can not be empty");
-            }
+            if (assignmentsElf1 == assignmentsElf2) return true;
+            string drawingAss1 = GetDrawing(assignmentsElf1);
+            string drawingAss2 = GetDrawing(assignmentsElf2);
 
-            var rucksacks = Text.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-
-            if (rucksacks.Length == 0) return 0;
-
-            var lowerCasePriorities = new Dictionary<char, int>() { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
-                { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 }, { 'm', 13 }, { 'n', 14 }, { 'o', 15 }, { 'p', 16 },
-            { 'q', 17 }, { 'r', 18 }, { 's', 19 }, { 't', 20 }, { 'u', 21 }, { 'v', 22 }, { 'w', 23 }, { 'x', 24 }, { 'y', 25 }, { 'z', 26 }};
-
-            var upperCasePriorities = new Dictionary<char, int>() { { 'A', 27 }, { 'B', 28 }, { 'C', 29 }, { 'D', 30 }, { 'E', 31 }, { 'F', 32 },
-                { 'G', 33 }, { 'H', 34 }, { 'I', 35 }, { 'J', 36 }, { 'K', 37 }, { 'L', 38 }, { 'M', 39 }, { 'N', 40 }, { 'O', 41 }, { 'P', 42 },
-            { 'Q', 43 }, { 'R', 44 }, { 'S', 45 }, { 'T', 46 }, { 'U', 47 }, { 'V', 48 }, { 'W', 49 }, { 'X', 50 }, { 'Y', 51 }, { 'Z', 52 }};
-
-            int sumOfPriority = 0;
-            foreach (var rucksack in rucksacks)
-            {
-                if (string.IsNullOrEmpty(rucksack) || string.IsNullOrWhiteSpace(rucksack)) continue;
-
-                int numberOfItems = rucksack.Length;
-                var leftCompartment = rucksack[..(numberOfItems / 2)];
-                var rightCompartment = rucksack[(numberOfItems / 2)..];
-                var itemInBoth = leftCompartment.FirstOrDefault(c => rightCompartment.Contains(c));
-                sumOfPriority += GetCharacterPriority(itemInBoth, lowerCasePriorities, upperCasePriorities);
-                            
-            }
-
-            return sumOfPriority;
+            if(string.IsNullOrEmpty(drawingAss1) || string.IsNullOrEmpty(drawingAss2)) return false;
+            
+            if (drawingAss1.Length > drawingAss2.Length)
+                return drawingAss1.IndexOf(drawingAss2) > -1;
+            else
+                return drawingAss2.IndexOf(drawingAss1) > -1;
+            
         }
 
-        private static int GetCharacterPriority(char character, Dictionary<char, int> lowerCasePriorities, Dictionary<char, int> upperCasePriorities)
-        {            
-            if(lowerCasePriorities.ContainsKey(character))
-                return lowerCasePriorities[character];
-            if(upperCasePriorities.ContainsKey(character))
-                return upperCasePriorities[character];
-         return 0;
-        }                        
+        private static string GetDrawing(string assignments)
+        {
+            if(string.IsNullOrEmpty(assignments) || string.IsNullOrWhiteSpace(assignments)) return string.Empty;
 
+            var sectionIds = assignments.Split("-", StringSplitOptions.RemoveEmptyEntries);
+            var _start = int.Parse(sectionIds[0]);
+            var _end = int.Parse(sectionIds[1]);
+            //if(_start == _end) return sectionIds[0];
+            StringBuilder result=new();
+            //if(_start < _end)
+            //{
+            for (int i = _start; i < _end+1; i++)
+            {                
+                result.Append("." + i);               
+            }
+            //}
+            //else
+            //{
+            //    for (int i = 100; i > 0; i--)
+            //    {
+            //        if (i = _start || i <= _end)
+            //            result.Append("." + i);
+            //        else
+            //            result.Append('.');
+            //    }
+            //}
+            return result.ToString();
+        }
+        
         private void ChangeInsertBtnState(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(InsertionTbx.Text) &&
